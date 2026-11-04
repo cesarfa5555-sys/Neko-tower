@@ -53,7 +53,7 @@
 // Progresso REAL: cada parte só conta quando de fato terminou; nenhuma porcentagem é inventada
 const Load = (() => {
   const nomes = { motor: 'motor 3D', fonte: 'fonte do menu', cena: 'cena e shaders', imagem: 'primeira imagem' };
-  const feitos = new Set(), g = id => document.getElementById(id), total = Object.keys(nomes).length;
+  const feitos = new Set(), g = id => document.getElementById(id), total = Object.keys(nomes).length, MIN_MS = 4000; // tempo mínimo da tela de carregamento (ms)
   function ui() {
     const falta = Object.keys(nomes).filter(k => !feitos.has(k));
     g('ldFill').style.width = (feitos.size / total * 100) + '%';
@@ -62,7 +62,7 @@ const Load = (() => {
   return {
     done(k) { // quando as 4 partes terminam, a tela some e o menu aparece
       feitos.add(k); ui();
-      if (feitos.size === total) setTimeout(() => { g('load').classList.add('gone'); setTimeout(() => g('load').remove(), 700); }, 150);
+      if (feitos.size === total) setTimeout(() => { g('load').classList.add('gone'); setTimeout(() => g('load').remove(), 700); }, Math.max(150, MIN_MS - performance.now())); // só abre depois de 2,5 s desde que a página abriu
     },
     fail(msg) { g('ldTxt').textContent = msg; g('ldRetry').classList.remove('hide'); g('ldFill').style.background = '#e0405a'; },
     ui
